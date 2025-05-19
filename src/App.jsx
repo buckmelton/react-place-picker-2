@@ -61,6 +61,30 @@ function App() {
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
     );
 
+    try {
+
+      const response = await fetch('http://localhost:3000/user-places', {
+        method: 'PUT',
+        body: JSON.stringify({ places: userPlaces.filter((place) => place.id != selectedPlace.current.id)}),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to update user data.');
+      }
+    } catch(error) {
+      // if the write to the backend fails, put UI back to the way it was
+      setUserPlaces(userPlaces);
+      setErrorUpdatingPlaces({
+        message: error.message || 'Failed to delete place.'
+      });
+    }
+
+
     setModalIsOpen(false);
   }, []);
 
